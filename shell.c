@@ -63,33 +63,6 @@ int main(){
         print_prompt();
         read_command(buf, command, args);
 
-        // Check if the command is "exit"
-        if(!strcmp(command, "exit")) break;
-    
-        // Check if the command is "cd"
-        if(!strcmp(command, "cd")){
-            // Check if the user specified a directory
-            if(args[0]){
-                // Change the current working directory
-                chdir(args[0]);
-            }
-        }
-        else{
-            // Fork a child process
-            pid_t pid = fork();
-
-            if(!pid){
-                // Child process
-                // Execute the command
-                execvp(command, args);
-            }
-            else{
-                // Parent process
-                // Wait for the child process to finish
-                waitpid(pid, NULL, 0);
-            }
-        }
-
         free(buf);
         free(command);
         // Free each char* in args, then args itself
