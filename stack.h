@@ -1,6 +1,7 @@
 #ifndef _STACK_H_
 #define _STACK_H_
 
+#include "command.h"
 #define STACK_SIZE 64
 
 // Stack that saves the commands

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <unistd.h>
-// #include <sys/wait.h>
+//#include <unistd.h>
+//#include <sys/wait.h>
 #include "command.h"
 #include "stack.h"
 
@@ -66,9 +66,9 @@ void execute_cd(Command_t cmd) {
     }
 }
 
-void execute_command(Command_t cmd){
+int execute_command(Command_t cmd){
     // Check if the user entered "exit"
-    if(!strcmp(cmd->command, "exit")) exit(0);
+    if(!strcmp(cmd->command, "exit")) return -1;
     // Check if the user entered "cd"
     else if(!strcmp(cmd->command, "cd")) execute_cd(cmd);
     // Otherwise, fork a child process to execute the command
@@ -92,25 +92,37 @@ void execute_command(Command_t cmd){
 
     // Free the command and its arguments
     free_command(cmd);
+
+    return 0;
 }
 
 int main(){
     // Stack that will save the commands to be executed
-    Stack_t todo;
-    init(&todo);
+    Stack_t todo = malloc(sizeof(Stack_t));
+    init(todo);
 
     while(1){
         // If there are no more commands waiting to be executed
         // ask for input from the user
-        if(isEmpty(&todo)){
+        if(isEmpty(todo)){
             // Print the prompt
             print_prompt();
             // read_line()
-            push(&todo, read_command(init_command()));
+            push(todo, read_command(init_command()));
         } 
         // Else execute the next command in the stack
         else{
-            execute_command(pop(&todo));
+            // If execute_command returns -1, exit the shell
+            if(execute_command(pop(todo)) == -1){
+                // Free all the commands in the stack
+                while(!isEmpty(todo)){
+                    free_command(pop(todo));
+                }
+                // Free the stack
+                free(todo);
+
+                return 0;
+            }
         }
     }
 
