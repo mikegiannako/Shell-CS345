@@ -22,9 +22,8 @@ char* get_dir(){
 
 // Recursive function that adds the commands parsed by read_commands
 // to the stack in reverse order
-void add_to_stack(Stack_t stack, char* token){
+void add_to_stack(Stack_t stack, char* token, char* saveptr){
     if(!token) return;
-
     // Initialize a new command
     Command_t cmd = init_command();
 
@@ -38,7 +37,8 @@ void add_to_stack(Stack_t stack, char* token){
     // recursively and then pushing the command to the stack
 
     // Call for the next token
-    add_to_stack(stack, strtok(NULL, ";"));
+    char* temp = strtok_r(NULL, ";", &saveptr);
+    add_to_stack(stack, temp, saveptr);
 
     // Push the command to the stack
     push(stack, cmd);
@@ -49,32 +49,38 @@ void add_to_stack(Stack_t stack, char* token){
 void read_commands(Stack_t stack){
     int bufsize = BUFFER_SIZE;
     char* buf = malloc(bufsize);
+    char* saveptr;
 
     // Read stdin
     fgets(buf, bufsize, stdin);
 
-    // Parse the commands into tokens on semi-colons
-    char* token = strtok(buf, ";");
+    // Remove the newline character
+    buf[strlen(buf) - 1] = '\0';
 
-    add_to_stack(stack, token);
+    // Parse the commands into tokens on semi-colons
+    char* token = strtok_r(buf, ";", &saveptr);
+    add_to_stack(stack, token, saveptr);
 
     // Free the buffer
     free(buf);
 }
 
 void print_prompt() {
-    char* user = getlogin(); // get the user name
-    char* dir = get_dir();     // get current working directory
+    // get the user name
+    char* user = getlogin();   
+
+    // get current working directory 
+    char* dir = get_dir();      
 
     printf("%s@cs345sh/%s$ ", user, dir);
 
-    free(dir); // free the memory allocated for dir
+    // free the memory allocated for dir
+    free(dir);                   
 }
 
 int main(){
     // Stack that will save the commands to be executed
-    Stack_t todo = malloc(sizeof(Stack_t));
-    init(todo);
+    Stack_t todo = stack_init();
 
     while(1){
         // If there are no more commands waiting to be executed
@@ -83,7 +89,7 @@ int main(){
             // Print the prompt
             print_prompt();
             // read_line()
-            push(todo, read_command(init_command()));
+            read_commands(todo);
         } 
         // Else execute the next command in the stack
         else{
@@ -96,7 +102,7 @@ int main(){
                 // Free the stack
                 free(todo);
 
-                return 0;
+                exit(0);
             }
         }
     }

@@ -1,11 +1,14 @@
 #include "stack.h"
 #include "command.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 // Function that initializes the stack
-void init(Stack_t stack) {
+Stack_t stack_init() {
+    Stack_t stack = malloc(sizeof(struct Stack));
     stack->top = -1;
     stack->size = 0;
+    return stack;
 }
 
 // Function that pushes a command to the stack

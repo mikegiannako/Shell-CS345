@@ -11,7 +11,7 @@ typedef struct Stack {
     int size;
 }* Stack_t;
 
-void init(Stack_t stack);
+Stack_t stack_init();
 void push(Stack_t stack, Command_t command);
 Command_t pop(Stack_t stack);
 int isEmpty(Stack_t stack);

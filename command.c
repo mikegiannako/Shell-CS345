@@ -3,11 +3,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/wait.h>
+//#include <sys/wait.h>
 
 // Initialize and return an empty command
 Command_t init_command() {
-    Command_t cmd = malloc(sizeof(Command_t));
+    Command_t cmd = malloc(sizeof(struct Command));
     cmd->buf = calloc(BUFFER_SIZE, sizeof(char));
     cmd->command = calloc(BUFFER_SIZE, sizeof(char));
     cmd->args = calloc(BUFFER_SIZE, sizeof(char*));
@@ -66,7 +66,7 @@ int execute_command(Command_t cmd){
         return 0;
     }
 
-    // Otherwise, fork a child process to execute the command
+    //Otherwise, fork a child process to execute the command
     pid_t pid = fork();
     if(pid == 0){
         // Child process
@@ -75,6 +75,7 @@ int execute_command(Command_t cmd){
 
     // Parent process
     waitpid(-1, NULL, 0);
+
 
     // Free the command and its arguments
     free_command(cmd);
