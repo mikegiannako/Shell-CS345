@@ -26,7 +26,7 @@ Command_t pop(Stack_t stack) {
         printf("Stack is empty");
         return NULL;
     } else {
-        Command_t command = &stack->commands[stack->top];
+        Command_t command = stack->commands[stack->top];
         stack->top--;
         stack->size--;
         return command;
