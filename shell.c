@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <unistd.h>
-//#include <sys/wait.h>
+#include <unistd.h>
 #include "command.h"
 #include "stack.h"
 
@@ -21,6 +20,48 @@ char* get_dir(){
     return buf;
 }
 
+// Recursive function that adds the commands parsed by read_commands
+// to the stack in reverse order
+void add_to_stack(Stack_t stack, char* token){
+    if(!token) return;
+
+    // Initialize a new command
+    Command_t cmd = init_command();
+
+    // Copy the token into the command buffer
+    strcpy(cmd->buf, token);
+
+    // Read the command
+    read_command(cmd);
+
+    // The reverse order is achieved by first calling the function
+    // recursively and then pushing the command to the stack
+
+    // Call for the next token
+    add_to_stack(stack, strtok(NULL, ";"));
+
+    // Push the command to the stack
+    push(stack, cmd);
+}
+
+// Function that reads stdin and separates it into commands on semi-colons
+// Then adds the commands to the stack
+void read_commands(Stack_t stack){
+    int bufsize = BUFFER_SIZE;
+    char* buf = malloc(bufsize);
+
+    // Read stdin
+    fgets(buf, bufsize, stdin);
+
+    // Parse the commands into tokens on semi-colons
+    char* token = strtok(buf, ";");
+
+    add_to_stack(stack, token);
+
+    // Free the buffer
+    free(buf);
+}
+
 void print_prompt() {
     char* user = getlogin(); // get the user name
     char* dir = get_dir();     // get current working directory
@@ -28,72 +69,6 @@ void print_prompt() {
     printf("%s@cs345sh/%s$ ", user, dir);
 
     free(dir); // free the memory allocated for dir
-}
-
-Command_t read_command(Command_t cmd) {
-    // Read the command from stdin
-    fgets(cmd->buf, BUFFER_SIZE, stdin);
-
-    // Remove the newline character from the end of the command
-    cmd->buf[strlen(cmd->buf) - 1] = '\0';
-
-    // Parse the command into arguments
-    char* token = strtok(cmd->buf, " ");
-
-    // The first token is the command
-    strcpy(cmd->command, token);
-
-    // The rest of the tokens (if any) are arguments
-    for(int i = 0; (token = strtok(NULL, " ")) && strcmp(token, ""); i++){
-        // if token is empty break
-        cmd->args[i] = malloc(strlen(token) + 1);
-        strcpy(cmd->args[i], token);
-    }
-    
-    return cmd;
-}
-
-void execute_cd(Command_t cmd) {
-    // Check if the user entered "cd .."
-    if(!strcmp(cmd->args[0], "..")){
-        // Change to the parent directory
-        chdir("..");
-    }
-    // Check if the user entered "cd <dir>"
-    else if(cmd->args[0]){
-        // Change to the specified directory
-        chdir(cmd->args[0]);
-    }
-}
-
-int execute_command(Command_t cmd){
-    // Check if the user entered "exit"
-    if(!strcmp(cmd->command, "exit")) return -1;
-    // Check if the user entered "cd"
-    else if(!strcmp(cmd->command, "cd")) execute_cd(cmd);
-    // Otherwise, fork a child process to execute the command
-    else{
-        // pid_t pid = fork();
-        // if(pid == 0){
-        //     // Child process
-        //     execvp(command, args);
-        // }
-        // else{
-        //     // Parent process
-        //     waitpid(-1, NULL, 0);
-        // }
-        // Print the ocmmand and arguments
-        printf("Command: %s\n", cmd->command);
-        for(int i = 0; cmd->args[i]; i++){
-            // Print ascii value of each character in the argument
-            printf("Argument[%d]: %s   ", i, cmd->args[i]);
-        }
-    }
-
-    // Free the command and its arguments
-    free_command(cmd);
-
-    return 0;
 }
 
 int main(){

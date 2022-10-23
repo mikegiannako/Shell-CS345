@@ -13,6 +13,10 @@ typedef struct Command {
 }* Command_t; 
 
 Command_t init_command();
+
 void free_command(Command_t cmd);
+int execute_command(Command_t cmd);
+Command_t read_command(Command_t cmd);
+void execute_cd(Command_t cmd);
 
 #endif // _COMMAND_H_
