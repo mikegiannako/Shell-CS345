@@ -91,20 +91,22 @@ int main(){
             print_prompt();
             // read_line()
             read_commands(todo);
-        } 
-        // Else execute the next command in the stack
-        else{
-            // If execute_command returns -1, exit the shell
-            if(execute_command(pop(todo)) == -1){
-                // Free all the commands in the stack
-                while(!isEmpty(todo)){
-                    free_command(pop(todo));
-                }
-                // Free the stack
-                free(todo);
 
-                exit(0);
+            continue;
+        } 
+        
+        // Else execute the next command in the stack
+
+        // If execute_command returns -1, exit the shell
+        if(execute_command(pop(todo)) == -1){
+            // Free all the commands in the stack
+            while(!isEmpty(todo)){
+                free_command(pop(todo));
             }
+            // Free the stack
+            free(todo);
+
+            exit(0);
         }
     }
 

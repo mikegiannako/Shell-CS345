@@ -10,4 +10,4 @@ shell: command.o stack.o shell.o
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	-del -f *.exe *.o
+	-rm -f *.exe *.o

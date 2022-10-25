@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
-//#include <sys/wait.h>
+#include <sys/wait.h>
 
 // Initialize and return an empty command
 Command_t init_command() {
@@ -82,6 +82,7 @@ void execute_echo(Command_t cmd) {
     if(cmd->args[1][0] == '$'){
         char* env = getenv(cmd->args[1] + 1);
         if(env) printf("%s\n", env);
+        else printf("failed\n");
     }
     // Otherwise, print the argument
     else printf("%s\n", cmd->args[1]);
@@ -91,7 +92,10 @@ void execute_echo(Command_t cmd) {
 
 int execute_command(Command_t cmd){
     // Check if the user entered "exit"
-    if(!strcmp(cmd->command, "exit")) return -1;
+    if(!strcmp(cmd->command, "exit")){
+        printf("HELLO\n");
+        return -1;
+    }
     // Check if the user entered "cd"
     if(!strcmp(cmd->command, "cd")){
         execute_cd(cmd);
