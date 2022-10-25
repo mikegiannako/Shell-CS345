@@ -44,7 +44,10 @@ void parse_setenv(Command_t cmd){
 
 void read_command(Command_t cmd) {
     // Check the command buffer for assignment
-    if(strchr(cmd->buf, '=')) parse_setenv(cmd);
+    if(strchr(cmd->buf, '=')){
+        parse_setenv(cmd);
+        return;
+    }
 
     // Parse the command into arguments
     char* token = strtok(cmd->buf, " ");
@@ -82,20 +85,14 @@ void execute_echo(Command_t cmd) {
     if(cmd->args[1][0] == '$'){
         char* env = getenv(cmd->args[1] + 1);
         if(env) printf("%s\n", env);
-        else printf("failed\n");
     }
     // Otherwise, print the argument
     else printf("%s\n", cmd->args[1]);
-
-    return 0;
 }
 
 int execute_command(Command_t cmd){
     // Check if the user entered "exit"
-    if(!strcmp(cmd->command, "exit")){
-        printf("HELLO\n");
-        return -1;
-    }
+    if(!strcmp(cmd->command, "exit")) return -1;
     // Check if the user entered "cd"
     if(!strcmp(cmd->command, "cd")){
         execute_cd(cmd);

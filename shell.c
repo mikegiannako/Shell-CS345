@@ -94,11 +94,12 @@ int main(){
 
             continue;
         } 
-        
+
         // Else execute the next command in the stack
 
         // If execute_command returns -1, exit the shell
         if(execute_command(pop(todo)) == -1){
+            printf("exit\n");
             // Free all the commands in the stack
             while(!isEmpty(todo)){
                 free_command(pop(todo));
