@@ -12,11 +12,17 @@ typedef struct Command {
     char** args;
 }* Command_t; 
 
+// Initialize and return an empty command
 Command_t init_command();
 
+// Frees the buffer command and arguments as well as the instance itself
 void free_command(Command_t cmd);
+
+// Reads the command and its arguments and executes it
+// Returns 0 if successful, -1 if the command was "exit"
 int execute_command(Command_t cmd);
-Command_t read_command(Command_t cmd);
-void execute_cd(Command_t cmd);
+
+// Reads the command from the buffer and parses it into command and arguments
+void read_command(Command_t cmd);
 
 #endif // _COMMAND_H_

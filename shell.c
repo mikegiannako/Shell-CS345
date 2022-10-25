@@ -49,6 +49,7 @@ void add_to_stack(Stack_t stack, char* token, char* saveptr){
 void read_commands(Stack_t stack){
     int bufsize = BUFFER_SIZE;
     char* buf = malloc(bufsize);
+
     char* saveptr;
 
     // Read stdin

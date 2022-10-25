@@ -25,7 +25,27 @@ void free_command(Command_t cmd) {
     free(cmd);
 }
 
-Command_t read_command(Command_t cmd) {
+//--------------------------------- READ COMMAND ---------------------------------
+
+void parse_setenv(Command_t cmd){
+    // Set the command to "assignment"
+    strcpy(cmd->command, "assignment");
+
+    // Split the buffer into 2 tokens on the equals sign
+    // and pass them as arguments to the command
+    char* token = strtok(cmd->buf, "=");
+    cmd->args[0] = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(cmd->args[0], token);
+    
+    token = strtok(NULL, "=");  
+    cmd->args[1] = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(cmd->args[1], token);
+}
+
+void read_command(Command_t cmd) {
+    // Check the command buffer for assignment
+    if(strchr(cmd->buf, '=')) parse_setenv(cmd);
+
     // Parse the command into arguments
     char* token = strtok(cmd->buf, " ");
 
@@ -40,9 +60,9 @@ Command_t read_command(Command_t cmd) {
         cmd->args[i] = malloc(strlen(token) + 1);
         strcpy(cmd->args[i], token);
     }
-    
-    return cmd;
 }
+
+//-------------------------------- EXECUTE COMMAND --------------------------------
 
 void execute_cd(Command_t cmd) {
     // Check if the user entered "cd .."
@@ -63,6 +83,12 @@ int execute_command(Command_t cmd){
     // Check if the user entered "cd"
     if(!strcmp(cmd->command, "cd")){
         execute_cd(cmd);
+        return 0;
+    }
+    // Check if the user entered an assignment
+    if(!strcmp(cmd->command, "assignment")){
+        // Set the environment variable
+        setenv(cmd->args[0], cmd->args[1], 1);
         return 0;
     }
 
