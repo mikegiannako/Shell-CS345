@@ -77,6 +77,18 @@ void execute_cd(Command_t cmd) {
     }
 }
 
+void execute_echo(Command_t cmd) {
+    // If the argument is an environment variable, print its value
+    if(cmd->args[1][0] == '$'){
+        char* env = getenv(cmd->args[1] + 1);
+        if(env) printf("%s\n", env);
+    }
+    // Otherwise, print the argument
+    else printf("%s\n", cmd->args[1]);
+
+    return 0;
+}
+
 int execute_command(Command_t cmd){
     // Check if the user entered "exit"
     if(!strcmp(cmd->command, "exit")) return -1;
@@ -89,6 +101,11 @@ int execute_command(Command_t cmd){
     if(!strcmp(cmd->command, "assignment")){
         // Set the environment variable
         setenv(cmd->args[0], cmd->args[1], 1);
+        return 0;
+    }
+    // Check if the user enetered "echo"
+    if(!strcmp(cmd->command, "echo")){
+        execute_echo(cmd);
         return 0;
     }
 
