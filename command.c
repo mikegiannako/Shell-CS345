@@ -98,13 +98,9 @@ void read_command(Command_t cmd) {
 // Function that executes one or multiple pipes
 void execute_pipe(Command_t cmd){
     // Get the number of pipes
-    int pipes = 0;
-    for(int i = 0; cmd->args[i]; i++){
-        if(!strcmp(cmd->args[i], "|")){
-            pipes++;
-        }
-    }
-
+    int pipes = -1;
+    for(int i = 0; cmd->args[i]; i++) pipes++;
+    
     // Create an array of pipes
     int pipefds[pipes][2];
 
@@ -113,29 +109,28 @@ void execute_pipe(Command_t cmd){
         pipe(pipefds[i]);
     }
 
+    Command_t cmd2;
+
     // Create a child process for each command
     for(int i = 0; cmd->args[i]; i++){
         // Create a new command
-        Command_t cmd2 = init_command();
+        cmd2 = init_command();
         // Copy the command into the command buffer
         strcpy(cmd2->buf, clear_whitespace(cmd->args[i]));
         // Parse the command
         read_command(cmd2);
 
         // Create a child process
-        int pid = fork();
+        pid_t pid = fork();
         if(pid == 0){
-            // If this is the first command, redirect the standard input
-            if(i == 0){
-                dup2(pipefds[0][1], STDOUT_FILENO);
-            }
-            // If this is the last command, redirect the standard output
-            else if(cmd->args[i + 1] == NULL){
+            // If this is not the first command of the pipes copy the input
+            // from the previous pipe
+            if(i != 0){
                 dup2(pipefds[i - 1][0], STDIN_FILENO);
             }
-            // Otherwise, redirect both the standard input and output
-            else{
-                dup2(pipefds[i - 1][0], STDIN_FILENO);
+            // If this is not the last command of the pipes copy the output
+            // to the next pipe
+            if(i != pipes){
                 dup2(pipefds[i][1], STDOUT_FILENO);
             }
 
@@ -149,21 +144,23 @@ void execute_pipe(Command_t cmd){
             execvp(cmd2->command, cmd2->args);
             // If execvp() fails, print an error message and exit
             printf("Error: command not found\n");
-            exit(1);
-        }
-        else{
-            // Wait for the child process to finish
-            waitpid(pid, NULL, 0);
+            _exit(1);
         }
 
         // Free the command
         free_command(cmd2);
     }
 
+
     // Close the pipes
-    for(int i = 0; i < pipes; i++){
+    for(int i = 0; i < pipes + 1; i++){
         close(pipefds[i][0]);
         close(pipefds[i][1]);
+    }
+
+    // Wait for all the pids
+    for(int i = 0; i < pipes + 1; i++){
+        waitpid(-1, NULL, 0);
     }
 }
 
