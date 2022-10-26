@@ -118,8 +118,6 @@ void execute_pipe(Command_t cmd){
         // Create a new command
         Command_t cmd2 = init_command();
         // Copy the command into the command buffer
-        // I use the clear_whitespace function because the user may have
-        // entered a pipe like this: "ls | wc" (with spaces)
         strcpy(cmd2->buf, clear_whitespace(cmd->args[i]));
         // Parse the command
         read_command(cmd2);
@@ -127,24 +125,24 @@ void execute_pipe(Command_t cmd){
         // Create a child process
         int pid = fork();
         if(pid == 0){
-            // If this is the first command, redirect the standard input
+            // If this is the first command copy the standard output to the write end of the pipe
             if(i == 0){
                 dup2(pipefds[0][1], STDOUT_FILENO);
+                close(pipefds[0][1]);
+                close(pipefds[0][0]);
             }
-            // If this is the last command, redirect the standard output
-            else if(cmd->args[i + 1] == NULL){
+            // If this is the last command copy the standard input to the read end of the pipe
+            else if(i == pipes){
                 dup2(pipefds[i - 1][0], STDIN_FILENO);
+                close(pipefds[i - 1][0]);
+                close(pipefds[i - 1][1]);
             }
             // Otherwise, redirect both the standard input and output
             else{
                 dup2(pipefds[i - 1][0], STDIN_FILENO);
                 dup2(pipefds[i][1], STDOUT_FILENO);
-            }
-
-            // Close the pipes
-            for(int j = 0; j < pipes; j++){
-                close(pipefds[j][0]);
-                close(pipefds[j][1]);
+                close(pipefds[i - 1][0]);
+                close(pipefds[i - 1][1]);
             }
 
             // Execute the command

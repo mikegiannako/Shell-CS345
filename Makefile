@@ -3,7 +3,7 @@ CFLAGS = -Wall -g
 .PHONY: default
 default: shell
 
-shell: command.o stack.o shell.o
+shell: command.o stack.o shell.o tools.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 %.o:%.c
