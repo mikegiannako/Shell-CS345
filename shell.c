@@ -6,21 +6,6 @@
 #include "tools.h"
 #include "stack.h"
 
-char* get_dir(){
-    int bufsize = BUFFER_SIZE;
-    char* buf = malloc(bufsize);
-    getcwd(buf, bufsize);  // get current working directory
-    // Check if getcwd() failed
-    while(!buf){
-        // Double the buffer size and try again
-        bufsize *= 2;
-        buf = realloc(buf, bufsize);
-        getcwd(buf, bufsize);
-    }
-
-    return buf;
-}
-
 // Recursive function that adds the commands parsed by read_commands
 // to the stack in reverse order
 void add_to_stack(Stack_t stack, char* token, char* saveptr){
@@ -74,7 +59,7 @@ void print_prompt() {
     // get current working directory 
     char* dir = get_dir();      
 
-    printf("%s@cs345sh/%s$ ", user, dir);
+    printf("\033[1;33m%s@cs345sh/%s$\033[0m ", user, dir);
 
     // free the memory allocated for dir
     free(dir);                   

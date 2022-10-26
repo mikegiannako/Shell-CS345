@@ -35,11 +35,11 @@ void parse_setenv(Command_t cmd){
 
     // Split the buffer into 2 tokens on the equals sign
     // and pass them as arguments to the command
-    char* token = strtok(cmd->buf, "=");
+    char* token = clear_whitespace(strtok(cmd->buf, "="));
     cmd->args[0] = calloc(strlen(token) + 1, sizeof(char));
     strcpy(cmd->args[0], token);
     
-    token = strtok(NULL, "=");  
+    token = clear_whitespace(strtok(NULL, "="));  
     cmd->args[1] = calloc(strlen(token) + 1, sizeof(char));
     strcpy(cmd->args[1], token);
 }
@@ -120,7 +120,6 @@ void execute_pipe(Command_t cmd){
         // Copy the command into the command buffer
         // I use the clear_whitespace function because the user may have
         // entered a pipe like this: "ls | wc" (with spaces)
-        printf("cmd->args[%d]: %s\n", i, clear_whitespace(cmd->args[i]));
         strcpy(cmd2->buf, clear_whitespace(cmd->args[i]));
         // Parse the command
         read_command(cmd2);
