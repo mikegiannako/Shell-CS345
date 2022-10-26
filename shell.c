@@ -23,7 +23,7 @@ void add_to_stack(Stack_t stack, char* token, char* saveptr){
     // recursively and then pushing the command to the stack
 
     // Call for the next token
-    char* temp = strtok_r(NULL, ";", &saveptr);
+    char* temp = clear_whitespace(strtok_r(NULL, ";", &saveptr));
     add_to_stack(stack, temp, saveptr);
 
     // Push the command to the stack
@@ -45,7 +45,7 @@ void read_commands(Stack_t stack){
     buf[strlen(buf) - 1] = '\0';
 
     // Parse the commands into tokens on semi-colons
-    char* token = strtok_r(buf, ";", &saveptr);
+    char* token = clear_whitespace(strtok_r(buf, ";", &saveptr));
     add_to_stack(stack, token, saveptr);
 
     // Free the buffer

@@ -50,7 +50,7 @@ void read_pipe_command(Command_t cmd){
     strcpy(cmd->command, "pipe");
 
     // Splits the string into tokens on the pipe character
-    char* token = strtok(cmd->buf, "|");
+    char* token = clear_whitespace(strtok(cmd->buf, "|"));
 
     for(int i = 0; token; i++){
         cmd->args[i] = calloc(strlen(token) + 1, sizeof(char));
@@ -60,7 +60,7 @@ void read_pipe_command(Command_t cmd){
         strcpy(cmd->args[i], token);
 
         // Continues splitting
-        token = strtok(NULL, "|");
+        token = clear_whitespace(strtok(NULL, "|"));
     }
 }
 
@@ -108,17 +108,15 @@ void execute_pipe(Command_t cmd){
     // Create an array of pipes
     int pipefds[pipes][2];
 
-    // Create the pipes
-    for(int i = 0; i < pipes; i++){
-        pipe(pipefds[i]);
-    }
-
     // Create a child process for each command
     for(int i = 0; cmd->args[i]; i++){
+        // Create the pipe
+        pipe(pipefds[i]);
+
         // Create a new command
         Command_t cmd2 = init_command();
         // Copy the command into the command buffer
-        strcpy(cmd2->buf, clear_whitespace(cmd->args[i]));
+        strcpy(cmd2->buf,cmd->args[i]);
         // Parse the command
         read_command(cmd2);
 
