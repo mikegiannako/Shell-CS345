@@ -108,39 +108,41 @@ void execute_pipe(Command_t cmd){
     // Create an array of pipes
     int pipefds[pipes][2];
 
+    // Create the pipes
+    for(int i = 0; i < pipes; i++){
+        pipe(pipefds[i]);
+    }
+
     // Create a child process for each command
     for(int i = 0; cmd->args[i]; i++){
-        // Create the pipe
-        pipe(pipefds[i]);
-
         // Create a new command
         Command_t cmd2 = init_command();
         // Copy the command into the command buffer
-        strcpy(cmd2->buf,cmd->args[i]);
+        strcpy(cmd2->buf, clear_whitespace(cmd->args[i]));
         // Parse the command
         read_command(cmd2);
 
         // Create a child process
         int pid = fork();
         if(pid == 0){
-            // If this is the first command copy the standard output to the write end of the pipe
+            // If this is the first command, redirect the standard input
             if(i == 0){
                 dup2(pipefds[0][1], STDOUT_FILENO);
-                close(pipefds[0][1]);
-                close(pipefds[0][0]);
             }
-            // If this is the last command copy the standard input to the read end of the pipe
-            else if(i == pipes){
+            // If this is the last command, redirect the standard output
+            else if(cmd->args[i + 1] == NULL){
                 dup2(pipefds[i - 1][0], STDIN_FILENO);
-                close(pipefds[i - 1][0]);
-                close(pipefds[i - 1][1]);
             }
             // Otherwise, redirect both the standard input and output
             else{
                 dup2(pipefds[i - 1][0], STDIN_FILENO);
                 dup2(pipefds[i][1], STDOUT_FILENO);
-                close(pipefds[i - 1][0]);
-                close(pipefds[i - 1][1]);
+            }
+
+            // Close the pipes
+            for(int j = 0; j < pipes; j++){
+                close(pipefds[j][0]);
+                close(pipefds[j][1]);
             }
 
             // Execute the command
