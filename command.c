@@ -109,12 +109,10 @@ void execute_pipe(Command_t cmd){
         pipe(pipefds[i]);
     }
 
-    Command_t cmd2;
-
     // Create a child process for each command
     for(int i = 0; cmd->args[i]; i++){
         // Create a new command
-        cmd2 = init_command();
+        Command_t cmd2 = init_command();
         // Copy the command into the command buffer
         strcpy(cmd2->buf, clear_whitespace(cmd->args[i]));
         // Parse the command
@@ -153,7 +151,7 @@ void execute_pipe(Command_t cmd){
 
 
     // Close the pipes
-    for(int i = 0; i < pipes + 1; i++){
+    for(int i = 0; i < pipes; i++){
         close(pipefds[i][0]);
         close(pipefds[i][1]);
     }
@@ -186,7 +184,7 @@ void execute_echo(Command_t cmd) {
         if(env) printf("%s\n", clear_quotes(env));
     }
     // Otherwise, print the argument
-    else printf("%s\n", cmd->args[1]);
+    else printf("%s\n", clear_quotes(cmd->args[1]));
 }
 
 int execute_command(Command_t cmd){
