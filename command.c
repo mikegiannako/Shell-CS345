@@ -1,4 +1,5 @@
 #include "command.h"
+#include "tools.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -61,8 +62,6 @@ void read_pipe_command(Command_t cmd){
         // Continues splitting
         token = strtok(NULL, "|");
     }
-
-    
 }
 
 void read_command(Command_t cmd) {
@@ -121,6 +120,7 @@ void execute_pipe(Command_t cmd){
         // Copy the command into the command buffer
         // I use the clear_whitespace function because the user may have
         // entered a pipe like this: "ls | wc" (with spaces)
+        printf("cmd->args[%d]: %s\n", i, clear_whitespace(cmd->args[i]));
         strcpy(cmd2->buf, clear_whitespace(cmd->args[i]));
         // Parse the command
         read_command(cmd2);
@@ -182,48 +182,6 @@ void execute_cd(Command_t cmd) {
         // Change to the specified directory
         chdir(cmd->args[1]);
     }
-}
-
-// Function that clears the quotes in case a value was a literal string
-char* clear_quotes(char* str){
-    // If the string has quotes, remove them and return the string
-    if(str[0] == '"' && str[strlen(str) - 1] == '"'){
-        str[strlen(str) - 1] = '\0';
-        return str + 1;
-    }
-
-    // Otherwise return the string
-    return str;
-}
-
-// Function that clears leading and trailing whitespace
-char* clear_whitespace(char* str){
-    // If the string is empty, return it
-    if(!str){
-        return str;
-    }
-
-    // Remove leading whitespace
-    while(isspace(*str)){
-        str++;
-    }
-
-    // If the string is empty, return it
-    if(!*str){
-        return str;
-    }
-
-    // Remove trailing whitespace
-    char* end = str + strlen(str) - 1;
-    while(end > str && isspace(*end)){
-        end--;
-    }
-
-    // Write a null terminator after the last non-whitespace character
-    *(end + 1) = '\0';
-
-    // Return the string
-    return str;
 }
 
 // Function that executes the "echo" command

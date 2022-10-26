@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "command.h"
+#include "tools.h"
 #include "stack.h"
 
 char* get_dir(){
