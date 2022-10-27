@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
-//#include <sys/wait.h>
+#include <sys/wait.h>
 
 // Initialize and return an empty command
 Command_t init_command() {
@@ -39,7 +39,7 @@ void parse_setenv(Command_t cmd){
     cmd->args[0] = calloc(strlen(token) + 1, sizeof(char));
     strcpy(cmd->args[0], token);
     
-    token = clear_quotes(clear_whitespace(strtok(NULL, "=")));  
+    token = clear_quotes(check_dollar_sign(clear_whitespace(strtok(NULL, "="))));  
     cmd->args[1] = calloc(strlen(token) + 1, sizeof(char));
     strcpy(cmd->args[1], token);
 }
