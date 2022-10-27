@@ -63,3 +63,20 @@ char* clear_quotes(char* str){
     // Otherwise return the string
     return str;
 }
+
+// Function that checks if a string starts with a dollar sign
+// and replaces it with the value of the corresponding environment variable
+// else it returns the string
+char* check_dollar_sign(char* str){
+    // If the string starts with a dollar sign, replace it with the value
+    // of the corresponding environment variable
+    if(str[0] == '$'){
+        char* env = getenv(str + 1);
+        if(env){
+            return env;
+        }
+    }
+
+    // Otherwise return the string
+    return str;
+}

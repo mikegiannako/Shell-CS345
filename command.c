@@ -86,7 +86,38 @@ void read_command(Command_t cmd) {
     strcpy(cmd->args[0], token);
 
     // The rest of the tokens (if any) are arguments
-    for(int i = 1; (token = strtok(NULL, " ")) && strcmp(token, ""); i++){
+    for(int i = 1; (token = check_dollar_sign(strtok(NULL, " "))) && strcmp(token, ""); i++){
+        // If the token starts with a quote, read tokens and add them to the argument until a closing quote is found   
+        if(token[0] == '"'){
+            // Remove the quote from the token
+            token = token + 1;
+
+            // Add the token to the argument
+            cmd->args[i] = calloc(strlen(token) + 1, sizeof(char));
+            strcpy(cmd->args[i], token);
+
+            // Read tokens until a closing quote is found
+            while(!(token = strtok(NULL, " ")) || token[strlen(token) - 1] != '"'){
+                // If the token is empty, return
+                if(!token){
+                    return;
+                }
+
+                // Add the token to the argument
+                cmd->args[i] = realloc(cmd->args[i], strlen(cmd->args[i]) + strlen(token) + 2);
+                strcat(cmd->args[i], " ");
+                strcat(cmd->args[i], token);
+            }
+
+            // Remove the closing quote from the token
+            token[strlen(token) - 1] = '\0';
+
+            // Add the token to the argument
+            cmd->args[i] = realloc(cmd->args[i], strlen(cmd->args[i]) + strlen(token) + 2);
+            strcat(cmd->args[i], " ");
+            strcat(cmd->args[i], token);
+        }
+
         cmd->args[i] = malloc(strlen(token) + 1);
         strcpy(cmd->args[i], token);
     }
