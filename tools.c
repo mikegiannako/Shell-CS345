@@ -25,19 +25,13 @@ char* get_dir(){
 // Function that clears leading and trailing whitespace
 char* clear_whitespace(char* str){
     // If the string is empty, return it
-    if(!str){
-        return str;
-    }
+    if(!str) return str;
 
     // Remove leading whitespace
-    while(isspace(*str)){
-        str++;
-    }
+    while(isspace(*str++));
 
     // If the string is empty, return it
-    if(!*str){
-        return str;
-    }
+    if(*str) return str;
 
     // Remove trailing whitespace
     char* end = str + strlen(str) - 1;
@@ -54,6 +48,9 @@ char* clear_whitespace(char* str){
 
 // Function that clears the quotes in case a value was a literal string
 char* clear_quotes(char* str){
+    // If the string is empty, return it
+    if(!str) return str;
+
     // If the string has quotes, remove them and return the string
     if(str[0] == '"' && str[strlen(str) - 1] == '"'){
         str[strlen(str) - 1] = '\0';
@@ -68,6 +65,9 @@ char* clear_quotes(char* str){
 // and replaces it with the value of the corresponding environment variable
 // else it returns the string
 char* check_dollar_sign(char* str){
+    // If the string is empty, return it
+    if(!str) return str;
+    
     // If the string starts with a dollar sign, replace it with the value
     // of the corresponding environment variable
     if(str[0] == '$'){

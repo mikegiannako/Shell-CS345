@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
-//#include <sys/wait.h>
+#include <sys/wait.h>
 
 // Initialize and return an empty command
 Command_t init_command() {
