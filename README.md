@@ -26,7 +26,7 @@ This file contains useful **functions that operate on strings** that are used in
 
 This file is where the **main()** is contained. It initializes and operates on the stack of commands, asking for input when the stack is empty else executing the next command of the stack.
 
-###Known issues
+### Known issues
 
 The shell **doesn't** handle Signals such as `CTRL-C`, `CTRL-S`
 
