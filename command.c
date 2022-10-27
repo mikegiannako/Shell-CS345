@@ -39,7 +39,7 @@ void parse_setenv(Command_t cmd){
     cmd->args[0] = calloc(strlen(token) + 1, sizeof(char));
     strcpy(cmd->args[0], token);
     
-    token = clear_whitespace(strtok(NULL, "="));  
+    token = clear_quotes(clear_whitespace(strtok(NULL, "=")));  
     cmd->args[1] = calloc(strlen(token) + 1, sizeof(char));
     strcpy(cmd->args[1], token);
 }
@@ -87,7 +87,6 @@ void read_command(Command_t cmd) {
 
     // The rest of the tokens (if any) are arguments
     for(int i = 1; (token = strtok(NULL, " ")) && strcmp(token, ""); i++){
-        // if token is empty break
         cmd->args[i] = malloc(strlen(token) + 1);
         strcpy(cmd->args[i], token);
     }
@@ -176,17 +175,6 @@ void execute_cd(Command_t cmd) {
     }
 }
 
-// Function that executes the "echo" command
-void execute_echo(Command_t cmd) {
-    // If the argument is an environment variable, print its value
-    if(cmd->args[1][0] == '$'){
-        char* env = getenv(cmd->args[1] + 1);
-        if(env) printf("%s\n", clear_quotes(env));
-    }
-    // Otherwise, print the argument
-    else printf("%s\n", clear_quotes(cmd->args[1]));
-}
-
 int execute_command(Command_t cmd){
     // Check if the command is "pipe"
     if(!strcmp(cmd->command, "pipe")){
@@ -204,11 +192,6 @@ int execute_command(Command_t cmd){
     if(!strcmp(cmd->command, "assignment")){
         // Set the environment variable
         setenv(cmd->args[0], cmd->args[1], 1);
-        return 0;
-    }
-    // Check if the user enetered "echo"
-    if(!strcmp(cmd->command, "echo")){
-        execute_echo(cmd);
         return 0;
     }
 
