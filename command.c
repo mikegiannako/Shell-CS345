@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/wait.h>
+//#include <sys/wait.h>
 
 // Initialize and return an empty command
 Command_t init_command() {
@@ -116,6 +116,8 @@ void read_command(Command_t cmd) {
             cmd->args[i] = realloc(cmd->args[i], strlen(cmd->args[i]) + strlen(token) + 2);
             strcat(cmd->args[i], " ");
             strcat(cmd->args[i], token);
+
+            continue;
         }
 
         cmd->args[i] = malloc(strlen(token) + 1);
