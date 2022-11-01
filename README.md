@@ -39,3 +39,13 @@ This would allow:
 - Macros
 
 **Signal Handling** would be a plus but unlikely to be added
+
+### Knowledge gained
+
+This assignement introduced me to the following concepts:
+- Working with Processes and more specifically with
+  - fork()
+  - waitpid()
+  - multiple asynchronous processes
+- Working with pipe()
+- Parsing input without regex
